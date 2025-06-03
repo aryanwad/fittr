@@ -5,15 +5,22 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 function InitialLayout() {
   const { user } = useAuth();
   const router = useRouter();
   const segments = useSegments();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    setIsReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
+
     const inAuthGroup = segments[0] === undefined;
 
     if (!user && !inAuthGroup) {
@@ -21,7 +28,7 @@ function InitialLayout() {
     } else if (user && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [user, segments]);
+  }, [user, segments, isReady]);
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
